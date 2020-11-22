@@ -319,3 +319,7 @@ func < (lhs: DatabaseValue, rhs: DatabaseValue) -> Bool {
         return true
     }
 }
+
+func < (lhs: [DatabaseValue], rhs: [DatabaseValue]) -> Bool {
+    lhs.lexicographicallyPrecedes(rhs, by: <)
+}

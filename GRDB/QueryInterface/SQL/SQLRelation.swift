@@ -593,12 +593,33 @@ extension JoinMapping {
             dbValues.remove(.null)
             
             if dbValues.isEmpty {
-                // null was removed from dbValues
+                // table.a IS NULL
                 return mapping.rightColumn == nil
             } else {
                 // table.a IN (1, 2, 3, ...)
                 // Sort database values for nicer output.
                 return dbValues.sorted(by: <).contains(mapping.rightColumn)
+            }
+        } else if _SQLRowValue.isAvailable {
+            // Join on a multiple columns.
+            
+            // Unique database values and filter out NULL:
+            let leftIndexes = mappings.map(\.leftIndex)
+            var dbValues = Set(leftRows.map { row in leftIndexes.map { row.databaseValue(at: $0) } })
+            dbValues.remove(mappings.map { _ in .null })
+            
+            if dbValues.isEmpty {
+                // table.a IS NULL AND table.b IS NULL
+                return mappings.map { $0.rightColumn == nil }.joined(operator: .and)
+            } else {
+                #warning("TODO: don't we need to use IS instead of =, in order to support NULLs? See https://www.sqlite.org/rowvalue.html")
+                // (table.a, table.b) = (1, 2) OR (table.a, table.b) = (3, 4) OR ...
+                // Sort database values for nicer output.
+                let rightColumns = _SQLRowValue(mappings.map(\.rightColumn))
+                return dbValues
+                    .sorted(by: <)
+                    .map { rightColumns == _SQLRowValue($0) }
+                    .joined(operator: .or)
             }
         } else {
             // Join on a multiple columns.

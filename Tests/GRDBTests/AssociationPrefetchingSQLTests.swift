@@ -194,14 +194,20 @@ class AssociationPrefetchingSQLTests: GRDBTestCase {
                 
                 let selectQueries = sqlQueries.filter(isSelectQuery)
                 XCTAssertEqual(selectQueries, [
-                    """
-                    SELECT * FROM "parent" ORDER BY "parentA", "parentB"
-                    """,
-                    """
-                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
-                    FROM "child" \
-                    WHERE (("parentA" = 'baz') AND ("parentB" = 'qux')) OR (("parentA" = 'foo') AND ("parentB" = 'bar'))
-                    """])
+                                """
+                                SELECT * FROM "parent" ORDER BY "parentA", "parentB"
+                                """,
+                                _SQLRowValue.isAvailable
+                                    ? """
+                                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
+                                    FROM "child" \
+                                    WHERE (("parentA", "parentB") = ('baz', 'qux')) OR (("parentA", "parentB") = ('foo', 'bar'))
+                                    """
+                                    : """
+                                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
+                                    FROM "child" \
+                                    WHERE (("parentA" = 'baz') AND ("parentB" = 'qux')) OR (("parentA" = 'foo') AND ("parentB" = 'bar'))
+                                    """])
             }
             
             // Request with avoided prefetch
@@ -236,13 +242,20 @@ class AssociationPrefetchingSQLTests: GRDBTestCase {
                 
                 let selectQueries = sqlQueries.filter(isSelectQuery)
                 XCTAssertEqual(selectQueries, [
-                    """
-                    SELECT * FROM "parent" WHERE "parentA" = 'foo' ORDER BY "parentA", "parentB"
-                    """,
-                    """
-                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
-                    FROM "child" WHERE ("name" = 'foo') AND (("parentA" = 'foo') AND ("parentB" = 'bar'))
-                    """])
+                                """
+                                SELECT * FROM "parent" WHERE "parentA" = 'foo' ORDER BY "parentA", "parentB"
+                                """,
+                                _SQLRowValue.isAvailable
+                                    ? """
+                                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
+                                    FROM "child" \
+                                    WHERE ("name" = 'foo') AND (("parentA", "parentB") = ('foo', 'bar'))
+                                    """
+                                    : """
+                                    SELECT *, "parentA" AS "grdb_parentA", "parentB" AS "grdb_parentB" \
+                                    FROM "child" \
+                                    WHERE ("name" = 'foo') AND (("parentA" = 'foo') AND ("parentB" = 'bar'))
+                                    """])
             }
         }
     }

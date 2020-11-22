@@ -542,12 +542,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
         }
     }
@@ -607,12 +619,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parentA"), Column("parentB")], to: [Column("a"), Column("b")]))
@@ -641,12 +665,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
         }
     }
@@ -707,12 +743,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parentA"), Column("parentB")]))
@@ -741,12 +789,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parentA"), Column("parentB")], to: [Column("a"), Column("b")]))
@@ -775,12 +835,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parentA") AND ("parents"."b" = "children"."parentB") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
         }
     }
@@ -846,12 +918,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parent1A") AND ("parents"."b" = "children"."parent1B") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parent1A"), Column("parent1B")], to: [Column("a"), Column("b")]))
@@ -880,12 +964,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parent1A") AND ("parents"."b" = "children"."parent1B") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (1, 2)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 1) AND ("b" = 2)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (1, 2)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 1) AND ("custom"."b" = 2)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parent2A"), Column("parent2B")]))
@@ -914,12 +1010,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parent2A") AND ("parents"."b" = "children"."parent2B") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 3) AND ("b" = 4)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 3) AND ("custom"."b" = 4)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (3, 4)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 3) AND ("b" = 4)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (3, 4)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 3) AND ("custom"."b" = 4)
+                        """)
             }
             do {
                 let association = Child.belongsTo(Parent.self, using: ForeignKey([Column("parent2A"), Column("parent2B")], to: [Column("a"), Column("b")]))
@@ -948,12 +1056,24 @@ class AssociationBelongsToSQLTests: GRDBTestCase {
                     FROM "children" \
                     LEFT JOIN "parents" ON ("parents"."a" = "children"."parent2A") AND ("parents"."b" = "children"."parent2B") AND ("parents"."name" = 'foo')
                     """)
-                try assertEqualSQL(db, Child().request(for: association), """
-                    SELECT * FROM "parents" WHERE ("a" = 3) AND ("b" = 4)
-                    """)
-                try assertEqualSQL(db, Child().request(for: association).aliased(TableAlias(name: "custom")), """
-                    SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 3) AND ("custom"."b" = 4)
-                    """)
+                try assertEqualSQL(
+                    db, Child().request(for: association),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT * FROM "parents" WHERE ("a", "b") = (3, 4)
+                        """
+                        : """
+                        SELECT * FROM "parents" WHERE ("a" = 3) AND ("b" = 4)
+                        """)
+                try assertEqualSQL(
+                    db, Child().request(for: association).aliased(TableAlias(name: "custom")),
+                    _SQLRowValue.isAvailable
+                        ? """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a", "custom"."b") = (3, 4)
+                        """
+                        : """
+                        SELECT "custom".* FROM "parents" "custom" WHERE ("custom"."a" = 3) AND ("custom"."b" = 4)
+                        """)
             }
         }
     }
