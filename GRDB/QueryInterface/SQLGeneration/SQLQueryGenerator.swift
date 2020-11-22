@@ -189,8 +189,8 @@ struct SQLQueryGenerator: Refinable {
         guard
             case let .table(tableName: tableName, alias: alias) = relation.source,
             try db.tableExists(tableName) // skip views
-            else {
-                return selectedRegion
+        else {
+            return selectedRegion
         }
         
         // The filter knows better
@@ -211,7 +211,7 @@ struct SQLQueryGenerator: Refinable {
         selection: [SQLSelectable],
         filters: [SQLExpression],
         groupExpressions: [SQLExpression])
-        throws -> Bool
+    throws -> Bool
     {
         if relation.joins.isEmpty == false {
             // Don't expect single results as soon as there is a join
@@ -314,7 +314,7 @@ struct SQLQueryGenerator: Refinable {
         _ db: Database,
         conflictResolution: Database.ConflictResolution,
         assignments: [ColumnAssignment])
-        throws -> UpdateStatement?
+    throws -> UpdateStatement?
     {
         switch try grouping(db) {
         case .none:
@@ -386,7 +386,7 @@ struct SQLQueryGenerator: Refinable {
         _ db: Database,
         conflictResolution: Database.ConflictResolution,
         assignments: [ColumnAssignment])
-        throws -> UpdateStatement?
+    throws -> UpdateStatement?
     {
         guard case let .table(tableName: tableName, alias: _) = relation.source else {
             // Programmer error
@@ -451,8 +451,8 @@ struct SQLQueryGenerator: Refinable {
         guard
             case let .table(tableName: tableName, alias: alias) = relation.source,
             try db.tableExists(tableName) // skip views
-            else {
-                return .nonUnique
+        else {
+            return .nonUnique
         }
         
         var groupingColumns: Set<String> = []
@@ -774,7 +774,7 @@ private struct SQLQualifiedJoin: Refinable {
         _ context: SQLGenerationContext,
         leftAlias: TableAlias,
         allowingInnerJoin allowsInnerJoin: Bool)
-        throws -> String
+    throws -> String
     {
         var allowsInnerJoin = allowsInnerJoin
         
@@ -885,6 +885,12 @@ private struct SQLExpressionIsConstantInRequest: _SQLExpressionVisitor {
         try expr.rhs._accept(&self)
     }
     
+    mutating func visit(_ expr: _SQLRowValue) throws {
+        for expression in expr.expressions {
+            try expression._accept(&self)
+        }
+    }
+    
     mutating func visit(_ expr: _SQLExpressionAssociativeBinary) throws {
         for expression in expr.expressions {
             try expression._accept(&self)
@@ -936,7 +942,7 @@ private struct SQLExpressionIsConstantInRequest: _SQLExpressionVisitor {
         let function = expr.function.uppercased()
         guard
             ((function == "MAX" || function == "MIN") && expr.arguments.count > 1)
-            || Self.knownPureFunctions.contains(function)
+                || Self.knownPureFunctions.contains(function)
         else {
             try setNotConstant() // Don't know - assume not constant
         }
@@ -1017,6 +1023,8 @@ private struct SQLTableColumnVisitor: _SQLExpressionVisitor {
             self.column = column.name
         }
     }
+    
+    mutating func visit(_ expr: _SQLRowValue) throws { }
     
     mutating func visit(_ expr: _SQLExpressionBetween) throws { }
     
@@ -1122,6 +1130,7 @@ extension SQLExpression {
     }
 }
 
+#warning("TODO: what should we do with _SQLRowValue? (a, b) == (1, 2) for example?")
 /// Support for `SQLExpression.identifyingColums(_:for:)`
 private struct SQLIdentifyingColumns: _SQLExpressionVisitor {
     struct BreakError: Error { }
@@ -1134,6 +1143,8 @@ private struct SQLIdentifyingColumns: _SQLExpressionVisitor {
     mutating func visit<Column>(_ column: Column) throws where Column: ColumnExpression { }
     
     mutating func visit(_ column: _SQLQualifiedColumn) throws { }
+    
+    mutating func visit(_ expr: _SQLRowValue) throws { }
     
     mutating func visit(_ expr: _SQLExpressionBetween) throws { }
     
@@ -1232,6 +1243,7 @@ extension SQLExpression {
     }
 }
 
+#warning("TODO: what should we do with _SQLRowValue? (a, b) == (1, 2) for example?")
 /// Support for `SQLExpression.identifyingRowIDs(_:for:)`
 private struct SQLIdentifyingRowIDs: _SQLExpressionVisitor {
     let db: Database
@@ -1247,6 +1259,8 @@ private struct SQLIdentifyingRowIDs: _SQLExpressionVisitor {
     mutating func visit<Column>(_ column: Column) throws where Column: ColumnExpression { }
     
     mutating func visit(_ column: _SQLQualifiedColumn) throws { }
+    
+    mutating func visit(_ expr: _SQLRowValue) throws { }
     
     mutating func visit(_ expr: _SQLExpressionBetween) throws { }
     
@@ -1407,7 +1421,7 @@ private struct SQLSelectableIsAggregate: _SQLSelectableVisitor {
     mutating func visit(_ selectable: _SQLSelectionLiteral) throws {
         // Don't know - assume not an aggregate
     }
-
+    
     // MARK: _SQLExpressionVisitor
     
     mutating func visit(_ dbValue: DatabaseValue) throws { }
@@ -1415,6 +1429,12 @@ private struct SQLSelectableIsAggregate: _SQLSelectableVisitor {
     mutating func visit<Column: ColumnExpression>(_ column: Column) throws { }
     
     mutating func visit(_ column: _SQLQualifiedColumn) throws { }
+    
+    mutating func visit(_ expr: _SQLRowValue) throws {
+        for expression in expr.expressions {
+            try expression._accept(&self)
+        }
+    }
     
     mutating func visit(_ expr: _SQLExpressionBetween) throws {
         try expr.expression._accept(&self)
